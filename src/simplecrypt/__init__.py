@@ -24,6 +24,8 @@ HEADER_LEN = 4
 for header in HEADER:
     assert len(header) == HEADER_LEN
 
+CHUNKSIZE = 100 * 1024 * 1024
+
 
 def encrypt(password, data):
     '''
@@ -52,12 +54,11 @@ def encrypt_file(password, infile):
     @return: A temporary file-like object with the encrypted data.
     '''
     cipher = None
-    chunksize = 64 * 1024
 
     outfile = tempfile.TemporaryFile()
 
     while True:
-        chunk = infile.read(chunksize)
+        chunk = infile.read(CHUNKSIZE)
         if len(chunk) == 0:
             break
         encrypted, cipher = _encrypt_internal(password, chunk, cipher)
@@ -95,12 +96,11 @@ def decrypt_file(password, infile):
     The file position is reset to 0.
     '''
     cipher = None
-    chunksize = 64 * 1024
 
     outfile = tempfile.TemporaryFile()
 
     while True:
-        chunk = infile.read(chunksize)
+        chunk = infile.read(CHUNKSIZE)
         if len(chunk) == 0:
             break
         decrypted, cipher = _decrypt_internal(password, chunk, cipher)
